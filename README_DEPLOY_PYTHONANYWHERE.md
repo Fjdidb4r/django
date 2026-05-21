@@ -32,6 +32,18 @@ Deployment steps for PythonAnywhere
 
 10) Reload the web app from the Web tab.
 
+WSGI helper file
+
+If you prefer to use a custom WSGI file bundled with the repository, point the "WSGI configuration file" field in the PythonAnywhere Web tab to:
+
+    /home/<your-username>/django_exam/pythonanywhere_wsgi.py
+
+Edit the top of that file to set `PA_USERNAME`, `PROJECT_HOME` and `VENV_PATH` to your values (the defaults assume you cloned into `~/django_exam`).
+
+Environment variables
+
+You can either paste the variables from `.env` into the Web tab's Environment Variables section, or rely on the `.env` file with `python-dotenv` (the bundled `pythonanywhere_wsgi.py` will attempt to load it if present).
+
 Notes:
 - Ensure `STATIC_ROOT` in settings.py is set (this project uses `staticfiles/`) and that you ran `collectstatic`.
 - If you use sqlite, upload `db.sqlite3` to the home directory or create a new DB via migrations.
