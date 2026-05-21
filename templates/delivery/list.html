@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Deliveries</h1>
+  <a class="btn btn-primary" href="{% url 'delivery_add' %}">Add Delivery</a>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        {% if deliveries %}
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Customer</th>
+                <th>Product</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Created By</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in deliveries %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ d.customer_name }}</td>
+                <td>{{ d.product }}</td>
+                <td>{{ d.phone }}</td>
+                <td>{{ d.address|truncatechars:40 }}</td>
+                <td>{{ d.created_by.username }}</td>
+                <td>
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'delivery_update' d.pk %}">Edit</a>
+                  {% if perms.delivery.delete_delivery %}
+                  <a class="btn btn-sm btn-danger" href="{% url 'delivery_delete' d.pk %}">Delete</a>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+          <p class="text-muted">No deliveries yet. Create one.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
