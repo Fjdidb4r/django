@@ -16,17 +16,30 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from a local .env file when available (development convenience)
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(os.path.join(BASE_DIR, '.env'))
+except Exception:
+    # python-dotenv not installed or .env not present; proceed using the environment
+    pass
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9$2trf@6eh1lft66sffljc4os4qw!9x+d!e)pp1fith2!7l5l7'
+# Read secret key from environment; keep a safe fallback for local development only
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY', 'django-insecure-9$2trf@6eh1lft66sffljc4os4qw!9x+d!e)pp1fith2!7l5l7'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+# Allowed hosts — set via environment variable as a comma-separated list when deploying
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if h.strip()]
 
 
 # Application definition
@@ -120,8 +133,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-# Additional static files dirs (for development)
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+# Where `collectstatic` will place static files for production (PythonAnywhere uses this)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Additional static files dirs (for development convenience)
+if DEBUG:
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+else:
+    STATICFILES_DIRS = []
 
 # Login/Logout redirects
 LOGIN_URL = '/accounts/login/'
